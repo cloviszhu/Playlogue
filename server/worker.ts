@@ -1,0 +1,4 @@
+import {api,type Env}from'./index.ts';
+import assets from '../work/assets.mjs';
+const publicAssets:Record<string,{body:string;type:string}>=assets;
+export default {async fetch(request:Request,env:Env,ctx?:ExecutionContext){const path=new URL(request.url).pathname;if(path.startsWith('/api/'))return api(request,env,ctx);if(request.method!=='GET')return new Response('Method not allowed',{status:405});const entry=publicAssets[path==='/'?'/index.html':path];if(!entry)return new Response('Not found',{status:404});return new Response(entry.body,{headers:{'Content-Type':entry.type,'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Cache-Control':'no-store','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob:; connect-src 'self'; base-uri 'none'; frame-ancestors 'self' https://*.chatgpt.com https://chatgpt.com"}});}};

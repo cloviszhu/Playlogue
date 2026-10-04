@@ -1,0 +1,57 @@
+.prep-content { max-width: 1120px; }
+.prep-content [hidden] { display: none !important; }
+.prep-steps { display: flex; flex-wrap: wrap; gap: 10px 24px; list-style: none; padding: 0; margin: 0 0 24px; color: var(--muted); font-size: 13px; }
+.prep-steps [aria-current] { color: var(--accent-deep); font-weight: 700; }
+#status { padding: 14px 18px; margin-bottom: 24px; border-left: 3px solid #59755e; background: #eaf0e6; border-radius: 0 6px 6px 0; font-size: 14px; overflow-wrap: anywhere; }
+#status[data-error=true] { color: #893326; background: #fff0eb; border-color: #893326; }
+.prep-options, .prep-panel { background: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 28px; }
+.prep-template { margin-top: 24px; padding-bottom: 26px; border-bottom: 1px solid var(--line); }
+.prep-template p, .saved-study-list p { margin-top: 10px; }
+.saved-study-list { margin-top: 24px; }
+.saved-study-list ul { list-style: none; padding: 0; margin: 18px 0 0; }
+.saved-study-list li { padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; overflow-wrap: anywhere; }
+.saved-study-list a { display: grid; gap: 8px; padding: 8px 0; }
+.saved-study-list a:hover strong { text-decoration: underline; }
+.saved-study-list span { color: var(--muted); font-size: 13px; }
+.actions, .form-footer { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 20px; }
+.draft-heading { display: flex; gap: 20px; align-items: center; justify-content: space-between; }
+.draft-heading .eyebrow, .prep-panel .eyebrow { margin-bottom: 8px; }
+.form-help { color: var(--muted); font-size: 14px; margin: 12px 0 20px; }
+.prep-content fieldset { min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin: 24px 0 0; background: white; }
+.prep-content legend { font-weight: 600; padding: 0 8px; }
+.prep-content label { display: block; margin: 0 0 20px; font-size: 14px; font-weight: 500; line-height: 1.6; }
+.prep-content input:not([type=checkbox]), .prep-content textarea, .prep-content select { margin-top: 8px; }
+.prep-content textarea { min-height: 110px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.question { border-bottom: 1px solid var(--line); padding: 20px 0 0; }
+.question-options { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 25px; }
+.question-options label:first-child, .prep-confirm { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.question-options label { font-weight: 400; }
+.question-options .remove { margin-left: auto; margin-bottom: 20px; }
+.remove { color: #893326; background: white; border-color: #d8d2cd; }
+.remove:hover:enabled { background: #fff0eb; }
+.question-options select:disabled { color: var(--muted); background: #f0f3ee; opacity: 1; }
+#budget { margin-top: 18px; color: var(--muted); font-size: 14px; }
+#preview-content { overflow-wrap: anywhere; }
+#preview-content > div { margin: 24px 0; }
+#preview-content h3 { font-size: 15px; letter-spacing: 0; margin-bottom: 8px; }
+#preview-content p { font-size: 14px; white-space: pre-wrap; }
+#preview-content ol { padding-left: 24px; border-top: 1px solid var(--line); padding-top: 16px; }
+#preview-content li { padding: 12px 0 16px 6px; }
+#preview-content small { display: block; color: var(--muted); font-size: 13px; margin-top: 8px; }
+.prep-content .prep-confirm { padding: 16px; margin: 24px 0 0; background: #f2f5ed; border-radius: 8px; font-weight: 400; align-items: flex-start; }
+.prep-confirm input { margin-top: 4px; }
+#saved-summary { margin: 20px 0; }
+@media(max-width:760px) {
+  .prep-options, .prep-panel, .prep-content fieldset { padding: 20px 16px; }
+  .pair { grid-template-columns: 1fr; gap: 0; }
+  .draft-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .prep-content input:not([type=checkbox]), .prep-content textarea, .prep-content select { font-size: 16px; min-height: 44px; }
+  .prep-content .actions, .form-footer { align-items: stretch; flex-direction: column; }
+  .prep-content .button { white-space: normal; }
+  .question-options { gap: 0 18px; }
+  .question-options .remove { margin-left: 0; }
+}
+
+#budget[data-error=true] { color: #893326; font-weight: 600; }
+.prep-content [aria-invalid=true] { border-color: #893326; outline: 1px solid #893326; }
