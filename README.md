@@ -6,7 +6,7 @@ Playlogue is a game UX interview prototype. Participants answer one question at 
 
 This source snapshot contains the v19 gameplay guide and the analysis loading spinner. The guide covers map design, perceived operator balance, and weapon customization and purchasing economy: three main questions, at most one immediate follow-up per topic, and at most two follow-ups overall. Existing saved guides retain their original version. Optional follow-ups depend on the answer; they are not guaranteed.
 
-The interface supports text answers, explicit voice transcript confirmation, session recovery, saved analysis, and source inspection. Candidate findings require human review. Real microphone/speaker acceptance and continuous voice are not established by the synthetic tests. The separate provider span-normalization candidate is excluded from this snapshot. Source publication does not deploy a service or enable provider calls.
+The interface supports text answers, explicit voice transcript confirmation, session recovery, saved analysis, and source inspection. Candidate findings require human review. Real microphone/speaker acceptance and continuous voice are not established by the synthetic tests. Provider span offsets can be repaired only when a verbatim quote occurs uniquely in its named answer and the repaired span passes the existing strict source validation. Source publication does not deploy a service or enable provider calls.
 
 ## Run the fictional demo
 
