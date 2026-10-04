@@ -1,0 +1,16 @@
+node_modules/
+work/
+dist/
+.env*
+.openai/
+.sites-runtime/
+*.db
+*.db-*
+*.sqlite*
+*.log
+*.wav
+*.mp3
+*.webm
+*.m4a
+evidence/
+outputs/

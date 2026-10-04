@@ -1,0 +1,30 @@
+{
+  "name": "playlogue",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs",
+    "test:core": "node --test tests/contracts.test.mjs tests/budget.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:api": "node scripts/build-tests.mjs && node --test tests/api.test.mjs tests/remaining-api.test.mjs tests/review-regressions.test.mjs",
+    "test:artifact": "node --test tests/worker.test.mjs",
+    "build": "node scripts/build.mjs",
+    "db:generate": "drizzle-kit generate",
+    "test:frontend": "node --test tests/frontend.test.mjs",
+    "test:integration": "node scripts/build-tests.mjs && node --test tests/transport.test.mjs tests/integration.test.mjs tests/live-local.test.mjs",
+    "preview:worker": "node scripts/preview-worker.mjs",
+    "test:custom": "node scripts/build-tests.mjs && node --test tests/custom-study.test.mjs",
+    "test:synthetic": "node scripts/build-tests.mjs && node scripts/build-analysis-tests.mjs && node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261004.1",
+    "drizzle-kit": "^0.31.11",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.3"
+  }
+}

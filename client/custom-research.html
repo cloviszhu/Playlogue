@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Playlogue · Prepare a study</title><link rel="stylesheet" href="/client/styles.css"><link rel="stylesheet" href="/client/custom-research.css"></head>
+<body class="preparation-page">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<aside class="sidebar" id="prep-sidebar">
+  <a class="brand workspace-link" href="/?adapter=api#start"><span class="brand-mark"><i></i><i></i><i></i></span>Playlogue<span class="brand-dot">.</span></a>
+  <div class="workspace-label">RESEARCH WORKSPACE</div>
+  <nav aria-label="Workspace"><a class="nav-item active workspace-link" href="/?adapter=api#start">Start</a><a class="nav-item workspace-link" href="/?adapter=api#sessions">Sessions</a><a class="nav-item workspace-link" href="/?adapter=api#analysis">Evidence & analysis</a></nav>
+  <div class="sidebar-study"><span class="eyebrow">STUDY PREPARATION</span><strong>Your own interview guide.</strong><span>For text and voice interviews.</span><a class="nav-item workspace-link" href="/?adapter=api#study">Study details</a></div>
+  <div class="sidebar-bottom"><a class="nav-item workspace-link" href="/?adapter=api#settings">Researcher settings</a><a class="nav-item workspace-link" href="/?adapter=api#example">Fictional example</a></div>
+</aside>
+<div class="workspace">
+  <div class="mobile-top"><a class="brand workspace-link" href="/?adapter=api#start">Playlogue<span class="brand-dot">.</span></a><button class="button icon-button" id="prep-menu" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="prep-sidebar">☰</button></div>
+  <div class="environment-strip"><span class="status-dot"></span><strong>PRIVATE WORKSPACE</strong><span>Study preparation</span><a class="workspace-link" href="/?adapter=api#start">Back to Start →</a></div>
+  <main id="main-content" class="main-content prep-content">
+    <header class="page-heading"><div><span class="eyebrow">START / STUDY PREPARATION</span><h1 tabindex="-1">Create a custom study.</h1><p id="intent-copy">Add your questions, review the guide, then start an interview.</p></div></header>
+    <ol class="prep-steps" aria-label="Study preparation progress"><li data-step="choose" aria-current="step">1. Edit</li><li data-step="preview">2. Review</li><li data-step="saved">3. Save and use</li></ol>
+    <p id="status" role="status" tabindex="-1">Checking researcher access…</p>
+
+    <form id="research-form" hidden>
+      <div class="draft-heading"><div><span class="eyebrow">UNSAVED DRAFT</span><h2>Edit your study.</h2></div></div>
+      <p class="form-help">Unsaved changes stay in this tab. Review the full guide before saving.</p>
+      <fieldset id="fields"><legend>Study background</legend><label>Study name<input name="title" maxlength="120" required></label><label>Research goal<textarea name="goal" maxlength="1000" required></textarea></label><div class="pair"><label>Game<input name="game" maxlength="120" required></label><label>Game build<input name="game_build" maxlength="120" placeholder="Use UNKNOWN if unverified" required></label></div><label>Target players<textarea name="target_players" maxlength="500" required></textarea></label><p class="form-help">Interview language: English. Write participant questions in English; your text is used as written and is not translated.</p><h2>Main questions</h2><p class="form-help">Follow-ups depend on the answers and stay within the limits you set.</p><div id="questions"></div><button class="button secondary" id="add-question" type="button">Add main question</button><p id="budget" aria-live="polite"></p></fieldset><div class="form-footer"><button class="button primary" id="preview-button" type="submit">Review full guide →</button><a class="button quiet workspace-link" href="/?adapter=api#start">Back to Start</a></div>
+    </form>
+    <section id="preview" class="prep-panel" hidden aria-labelledby="preview-title"><span class="eyebrow">REVIEW / NOT YET SAVED</span><h2 id="preview-title" tabindex="-1">Review your interview guide.</h2><p class="form-help">Check the full guide, then save it for your interview.</p><div id="preview-content"></div><label class="prep-confirm"><input id="confirmed" type="checkbox"><span>I have reviewed the full guide and want to save it as a new study.</span></label><div class="actions"><button class="button secondary" id="edit" type="button">Back to editing</button><button class="button primary" id="save" type="button" aria-describedby="save-hint" disabled>Save and use this study →</button></div><p id="save-hint" class="form-help" aria-live="polite">Check the confirmation above to enable Save.</p></section>
+    <section id="saved" class="prep-panel" hidden><span class="eyebrow">SAVED AND SELECTED</span><h2>Ready for your interview.</h2><p id="saved-summary"></p><a class="button primary" id="interview-link">Continue with this study →</a></section>
+  </main><footer class="workspace-footer"><span>PLAYLOGUE / GAME UX RESEARCH</span><span>Listen carefully. Trace the evidence.</span></footer>
+</div><script type="module" src="/client/custom-research.js"></script></body></html>
