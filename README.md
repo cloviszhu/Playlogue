@@ -1,25 +1,64 @@
 # Playlogue
 
-[English](README.md) | [简体中文](README.zh-CN.md)
+[English](README.md) · [简体中文](README.zh-CN.md)
 
-Playlogue is a game UX interview prototype. Participants answer one question at a time, while researchers inspect tentative findings against the recorded questions and exact answer spans. The included examples and tests use fictional answers and synthetic data.
+**Game UX interviews, with findings you can trace back to the player's words.**
 
-This source snapshot contains the v19 gameplay guide and the analysis loading spinner. The guide covers map design, perceived operator balance, and weapon customization and purchasing economy: three main questions, at most one immediate follow-up per topic, and at most two follow-ups overall. Existing saved guides retain their original version. Optional follow-ups depend on the answer; they are not guaranteed.
+Playlogue is a research workspace prototype that connects guided player interviews to evidence review. Players answer one question at a time; researchers inspect candidate findings alongside the exact question, quote and answer revision behind them.
 
-The interface supports text answers, explicit voice transcript confirmation, session recovery, saved analysis, and source inspection. Candidate findings require human review. Real microphone/speaker acceptance and continuous voice are not established by the synthetic tests. Provider span offsets can be repaired only when a verbatim quote occurs uniquely in its named answer and the repaired span passes the existing strict source validation. Source publication does not deploy a service or enable provider calls.
+**Guided interviews · Bounded follow-ups · Traceable evidence · Text & voice flows**
 
-## Run the fictional demo
+![A finding opened beside its original question and highlighted answer](docs/images/source.png)
 
-Use Node.js 24 or later (the test harness uses built-in SQLite).
+*Actual local interface with hand-authored fictional records. No participant data or model-generated research results are pictured.*
+
+## The experience
+
+1. **Prepare a study.** Use the built-in gameplay feedback guide or define a custom study with a research goal and question limits.
+2. **Listen and follow up.** Review each typed answer or confirm a voice transcript before submission. Follow-ups stay within the published guide's topic and question budget.
+3. **Review the evidence.** Inspect transcripts, supporting quotes, counterexamples and unknowns before confirming a candidate finding.
+
+![Playlogue workspace connecting study setup, interview and evidence review](docs/images/workspace.png)
+
+## Design highlights
+
+| Decision | Why it matters |
+| --- | --- |
+| Controlled follow-ups | The current built-in gameplay guide covers map design, perceived operator balance, and customization/purchasing economy: three main questions, at most one immediate follow-up per topic and two overall. Saved guides keep their own version and limits. |
+| Exact-source findings | Findings carry question/answer IDs, answer revision, UTF-16 span offsets and a verbatim quote. Validation checks that the quote matches its source before it can be used as evidence. |
+| Revision-aware review | Editing an answer changes its revision and the session's content/evidence revisions. Analyses based on the previous snapshot become stale; old quotes cannot silently support the edited answer. |
+| Deliberate text/voice interaction | Voice uses question playback, recording, transcription and explicit transcript confirmation. Mode changes and interrupted tasks are handled through session state. |
+
+The local practice uses an older fictional guide with its own limits and disables AI/audio calls. Hosted voice requires configured services and an unexpired server call window; microphone, speaker and continuous-voice acceptance are not established by synthetic tests. Candidate findings remain hypotheses for human review.
+
+## Architecture & stack
+
+```mermaid
+flowchart LR
+  UI[JS browser workspace] --> Adapter[Demo or API adapter]
+  Adapter --> Worker[TypeScript / Cloudflare Worker]
+  Worker --> State[Shared interview and evidence rules]
+  Worker --> DB[(D1 / SQLite)]
+  Worker --> Provider[Text and speech providers]
+```
+
+| Layer | Implementation |
+| --- | --- |
+| Interface | JavaScript ES modules, HTML/CSS; interview, transcript and evidence views in [client/](client/) |
+| State & evidence | Shared JavaScript modules for routing, question budgets, revisions and source validation in [shared/](shared/) |
+| API & persistence | TypeScript Worker, D1 repository; Drizzle ORM schema and generated SQLite migrations in [server/](server/), [db/](db/) and [drizzle/](drizzle/) |
+| Build & verification | esbuild bundles the Worker; TypeScript checks and Node's built-in test runner exercise synthetic workflows |
+
+## Run locally
+
+Use **Node.js 24+** (the API test harness uses built-in SQLite).
 
 ```sh
 npm ci
 npm start
 ```
 
-Open the loopback URL printed by the server. This serves the fictional frontend demo; it does not enable a provider or real research collection.
-
-## Build and test
+Open **http://127.0.0.1:4174** to explore the fictional practice and source-linked example without an API key. The example is a UI demonstration, not a live interview service.
 
 ```sh
 npm run check
@@ -28,12 +67,12 @@ npm run typecheck
 npm run test:synthetic
 ```
 
-The build generates the Worker and synthetic API harness without requiring private hosting metadata. `npm run preview:worker` starts a loopback Worker preview with a fresh synthetic SQLite database and identity/live calls disabled. The API frontend is selected explicitly with `?adapter=api`. Generated `work/`, `dist/`, and runtime databases are ignored.
+For the local Worker/API preview, run `npm run preview:worker` after building, then open `http://127.0.0.1:4175/?adapter=api`. This uses a fresh synthetic SQLite database with live calls and trusted identity disabled.
 
-The publication includes schema source, migrations, and mocked tests. Browser QA scripts, live verification scripts, private deployment configuration, internal evidence, diagnostic exports, participant records, audio, and logs are excluded. Some test names retain historical `live` terminology but use injected mock transports and synthetic fixtures; they do not validate real billing or research outcomes.
+## Explore further
 
-## Runtime configuration
+- [Full fictional evidence example](docs/images/evidence.png)
+- [Runtime configuration & validation boundaries](docs/DEVELOPMENT.md) · [中文版](docs/DEVELOPMENT.zh-CN.md)
+- [Screenshot provenance](docs/SCREENSHOTS.md)
 
-Set bindings and secrets in your own server runtime. Never commit credential values or participant capabilities. The names include `DB`, `APP_ORIGIN`, `AUTH_MODE`, `SITE_ACCESS_MODE`, `RESEARCHER_USER_ID`, and `OPENAI_API_KEY`. Hosted text/speech readiness, authorization, consent, quota, retention, and budget gates are enforced by the server. Local mock/demo workflows need no real API key. A deployment-specific `.openai/hosting.json`, if used, must be created privately and stays ignored.
-
-This is an engineering prototype. Model-generated interpretations are hypotheses, not representative player findings or validated design recommendations. App deletion and provider retention have different boundaries. No public demo address or new open-source license grant is supplied in this source snapshot.
+This repository presents an engineering prototype. Hosted use requires private runtime configuration; no public demo or deployment is claimed here.
