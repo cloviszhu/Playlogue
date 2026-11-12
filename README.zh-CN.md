@@ -1,64 +1,112 @@
+<div align="center">
+
 # Playlogue
 
-[English](README.md) · [简体中文](README.zh-CN.md)
+### 从玩家回答出发，让每条发现都有原文可查。
 
-**让游戏 UX 访谈中的每条发现，都能回到玩家原话。**
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-D16A32?style=flat-square&logo=cloudflare&logoColor=white)
+![SQLite](https://img.shields.io/badge/D1_%2F_SQLite-245467?style=flat-square&logo=sqlite&logoColor=white)
+![研究原型](https://img.shields.io/badge/%E9%A1%B9%E7%9B%AE-%E7%A0%94%E7%A9%B6%E5%8E%9F%E5%9E%8B-356F60?style=flat-square)
 
-Playlogue 是连接玩家访谈与证据审阅的研究工作台原型。玩家逐题回答，研究员从候选结论回查实际提问、原文片段与回答版本，把整理反馈和核对来源放在同一条工作流里。
+**[English](README.md) | 简体中文**
 
-**引导式访谈 · 受控追问 · 原话溯源 · 文本与语音流程**
+[源码](client/) · [开发说明](docs/DEVELOPMENT.zh-CN.md) · [截图来源](docs/SCREENSHOTS.md)
 
-![从候选发现打开原始提问与高亮回答](docs/images/source.png)
+</div>
 
-*本地实际界面，使用人工编写的虚构记录；截图不含真实参与者数据，也不代表模型产出的研究结果。*
+![候选发现与对应问题、原文片段](docs/images/source.png)
 
-## 核心体验
+*真实界面截图，内容为人工编写的虚构记录。*
 
-1. **准备研究**：选择内置玩法反馈提纲，或设置研究目标、问题和追问额度，发布自定义研究。
-2. **逐题倾听**：玩家输入文字，或确认语音转写后提交；追问受已发布提纲的主题与问题预算约束。
-3. **核对结论**：结合访谈记录、支持原话、反例与未知项，人工审阅候选发现。
+玩家改了回答，引用旧回答的分析该怎么办？
 
-![从研究准备到访谈和证据审阅的工作台](docs/images/workspace.png)
+Playlogue 把这层关系明确记录下来。每条候选发现都关联实际问题、原文片段和回答版本。回答一旦修订，旧分析就被标记为过期。研究员可以先回查依据，再决定批准还是改写这条发现。
 
-## 设计亮点
+原型也支持引导式玩家访谈，限制追问次数与模型调用预算。参与者逐题作答，可以输入文字，也可以确认语音转写；过程中支持暂停与修改答案。
 
-| 设计 | 解决的问题 |
-| --- | --- |
-| 受控追问 | 当前内置玩法提纲覆盖地图设计、玩家感知的干员平衡、改装与购买经济：三个主问题，每个主题最多一个即时追问，全场最多两个。已保存提纲保留各自版本与额度。 |
-| 结论引用原话 | 引用绑定问题/回答 ID、回答版本、UTF-16 字符区间和逐字原文，使用前校验原文与来源一致。 |
-| 回答修改后旧证据失效 | 修改回答会推进回答版本与会话内容/证据版本；基于旧快照的分析变为过期，旧引用不能悄悄沿用到新答案。 |
-| 明确的文本/语音交互 | 语音流程包含问题播报、录音、转写及提交前确认；模式切换与中断任务由会话状态管理。 |
-
-本地练习使用较早的虚构提纲，保留独立额度，并关闭 AI/音频调用。托管语音路径需要服务配置，且调用窗口须未过期；合成测试不能证明真实麦克风、扬声器或连续语音验收通过。候选结论仍需人工判断。
-
-## 架构与技术栈
+## 一条回答如何成为可复核的证据
 
 ```mermaid
-flowchart LR
-  UI[JS 浏览器工作台] --> Adapter[Demo / API 适配器]
-  Adapter --> Worker[TypeScript / Cloudflare Worker]
-  Worker --> State[共享访谈与证据规则]
-  Worker --> DB[(D1 / SQLite)]
-  Worker --> Provider[文本与语音服务]
+flowchart TB
+    Guide["已发布访谈提纲<br/>主题与追问次数限制"] --> Answer["参与者回答<br/>文字或已确认转写"]
+    Answer --> Snapshot["保存回答版本"]
+    Snapshot --> Finding["候选发现<br/>问题、引用与原文区间"]
+    Finding --> Check{"来源和版本<br/>仍然有效？"}
+    Check -->|是| Review["研究员复核<br/>回查、批准或改写"]
+    Answer -->|修改答案| New["新的回答版本"]
+    New --> Stale["旧分析标记为过期"]
+    Check -->|否| Stale
+    classDef flow fill:#E7F2EE,stroke:#477A6A,color:#183E33,stroke-width:1.5px;
+    classDef review fill:#EAF0F8,stroke:#54739C,color:#203953;
+    classDef invalid fill:#FFF1DF,stroke:#AD7832,color:#5F401B;
+    class Guide,Answer,Snapshot,Finding flow;
+    class Check,Review review;
+    class New,Stale invalid;
 ```
 
-| 层次 | 实现 |
+| 设计选择 | 具体行为 |
 | --- | --- |
-| 界面 | JavaScript ES modules、HTML/CSS；[client/](client/) 实现访谈、记录与证据视图 |
-| 状态与证据 | [shared/](shared/) 中的 JavaScript 模块处理路由、追问预算、修订和引用校验 |
-| API 与持久化 | TypeScript Worker、D1 repository；Drizzle ORM 定义 schema 并生成 SQLite 迁移，见 [server/](server/)、[db/](db/)、[drizzle/](drizzle/) |
-| 构建与验证 | esbuild 打包 Worker，TypeScript 类型检查与 Node 内置测试运行器验证合成工作流 |
+| 给追问设置上限 | 当前 API 玩法提纲有三个主问题，每个主题最多一个即时追问，全程最多两个。已保存提纲沿用各自的限制。 |
+| 把引用依据和发现一起保存 | 来源记录包含问题与回答 ID、回答版本、UTF-16 区间及逐字引用。 |
+| 将答案修改视为来源变化 | 更新回答与会话版本，使旧分析不再作为当前版本的分析使用。 |
+| 明确确认语音内容 | 参与者查看并确认转写后，内容才成为正式回答。 |
+| 在服务端控制重试与支出 | 通过状态检查、重复请求保护和预算预留约束 API 操作。 |
 
-## 本地运行
+引用有效，只能证明这些话来自哪里。研究员仍需判断解释是否成立。
 
-使用 **Node.js 24+**，API 测试 harness 使用内置 SQLite。
+## 体验虚构访谈
+
+使用 **Node.js 24+**。API 测试工具依赖 Node 内置 SQLite。
 
 ```sh
+git clone https://github.com/cloviszhu/Playlogue.git
+cd Playlogue
 npm ci
 npm start
 ```
 
-打开 **http://127.0.0.1:4174**，无需 API key 即可查看虚构练习与引用示例。示例用于体验界面，不是在线访谈服务。
+打开 [127.0.0.1:4174](http://127.0.0.1:4174)。本地练习使用虚构回答，不调用 AI 或音频服务，也不需要 API 密钥。练习使用较早的提纲，其次数限制与当前 API 玩法提纲不同。
+
+
+![Playlogue 本地练习工作区](docs/images/workspace.png)
+
+<details>
+<summary><strong>架构与源码入口</strong></summary>
+
+```mermaid
+flowchart LR
+    UI["浏览器工作区<br/>JavaScript、HTML 与 CSS"] --> Adapter{"演示还是 API？"}
+    Adapter -->|演示| Fixture["虚构样例<br/>不调用模型服务"]
+    Adapter -->|API| Worker["TypeScript Worker"]
+    Worker --> Rules["共享规则<br/>路由、预算与证据"]
+    Worker <--> DB[("D1 / SQLite")]
+    Worker -. 运行条件校验 .-> Provider["文本与语音服务"]
+    classDef app fill:#E7F2EE,stroke:#477A6A,color:#183E33;
+    classDef server fill:#EAF0F8,stroke:#54739C,color:#203953;
+    classDef runtime fill:#FFF1DF,stroke:#AD7832,color:#5F401B;
+    class UI,Adapter,Fixture app;
+    class Worker,Rules,DB server;
+    class Provider runtime;
+```
+
+前端使用 JavaScript ES modules，Worker 使用 TypeScript。共享 JavaScript 模块定义访谈状态转换、引用校验与预算规则；Drizzle 定义数据结构，esbuild 完成 Worker 打包。
+
+| 源码 | 阅读重点 |
+| --- | --- |
+| [client/adapter.js](client/adapter.js) | 演示与 API 的边界 |
+| [shared/evidence.mjs](shared/evidence.mjs) | 原文区间、来源快照和旧分析失效 |
+| [shared/default-guide.mjs](shared/default-guide.mjs) | 内置提纲、版本与问题上限 |
+| [shared/budget.mjs](shared/budget.mjs) | 调用预算预留与费用记录 |
+| [server/repository.ts](server/repository.ts) | 会话持久化与版本检查 |
+| [db/schema.ts](db/schema.ts) | 数据库结构 |
+
+引用偏移只在很窄的条件下修复：逐字引用必须在指定回答中唯一出现，修复后的区间还要通过原有严格校验。意思相近的改写不符合要求。
+
+</details>
+
+<details>
+<summary><strong>构建命令、运行配置与验证状态</strong></summary>
 
 ```sh
 npm run check
@@ -67,12 +115,14 @@ npm run typecheck
 npm run test:synthetic
 ```
 
-构建后运行 `npm run preview:worker`，再打开 `http://127.0.0.1:4175/?adapter=api` 可预览 Worker/API；它使用全新合成 SQLite 数据库，关闭真实调用与可信身份。
+这些是核验命令，不代表测试全部通过。[开发记录](docs/DEVELOPMENT.zh-CN.md)保留了全量测试失败及较小范围 44 项测试通过的结果。固定日期样例和服务端调用截止时间会影响当前运行结果。
 
-## 继续了解
+构建后运行 `npm run preview:worker`，再打开 [127.0.0.1:4175/?adapter=api](http://127.0.0.1:4175/?adapter=api)。该预览使用全新的合成 SQLite 数据，关闭真实调用与可信身份。
 
-- [完整虚构证据示例截图](docs/images/evidence.png)
-- [运行配置与验证边界](docs/DEVELOPMENT.zh-CN.md) · [English](docs/DEVELOPMENT.md)
-- [截图来源说明](docs/SCREENSHOTS.md)
+托管运行需要私下配置 `DB`、`APP_ORIGIN`、`AUTH_MODE`、`SITE_ACCESS_MODE`、`RESEARCHER_USER_ID` 等绑定，以及所需的服务凭证。服务端检查授权、同意、额度、保留期和调用预算。`shared/session.mjs` 中的调用窗口止于 `2026-10-04T16:00:00Z`，仅填写凭证不会开放真实调用。
 
-本仓库展示工程原型。托管使用需要私人运行配置；此处不宣称公开 Demo 或已部署服务。
+合成测试没有验证麦克风与扬声器、连续语音、真实账单或研究质量。应用侧删除与服务提供方的数据保留也有不同边界。仓库不提供公开托管演示，也不额外授予新的开源许可证。
+
+</details>
+
+[完整虚构证据示例](docs/images/evidence.png)展示了更多分析内容。[截图说明](docs/SCREENSHOTS.md)记录了截图来源和样例性质；图中的发现由人工编写，不是真实参与者数据或模型研究结果。
